@@ -1,0 +1,15 @@
+sytem identity set name=M14-1
+lo 141.141.141.141
+ether1 100.1.3.2/30
+ether2 2.1.2.1/30
+ether3 3.1.3.1/30
+dns static dns by 100.1.3.1
+ip route 0.0.0.0/0 via 100.1.3.1
+bgp template "M14-1"; AS 48000; Router-id 141.141.141.141; next-hop-self; output netw "PCISIS"
+bgp connection "M14-2"; template "M14-1"; remote AS 48000; remote address 142.142.142.142; ibgp
+bgp connection "M14-3"; template "M14-1"; remote AS 48000; remote address 143.143.143.143; ibgp
+bgp connection "to22000"; template "M14-1"; remote AS 22000; remote address 100.1.3.1; ebgp
+isis instance isis; area 00.0000; system-id 4141.4141.4141
+isis interface template instances isis; intefaces ether2,ether3,lo levels l1
+NAT "srcnat" on ether1; action masquerade
+firewall address list "PCISIS" 200.1.4.0/24;

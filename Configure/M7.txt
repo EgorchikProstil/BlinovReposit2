@@ -1,0 +1,13 @@
+system identity set name=M7
+Loop0 7.7.7.7
+ether1 30.1.1.2/30
+ether2 100.1.2.1/30
+Router-id by Loop
+ospf instance "ospf-instance-1"
+ospf area with instance "ospf-instance-1"
+ospf interfaces ether1, Loop0
+dns static dns by 100.1.2.2
+bgp template "M7"; AS 55000; Router-id 7.7.7.7; next-hop-self; default originate; output netw "M8"
+bgp connection "M8"; template "M7"; remote AS 55000; remote address 8.8.8.8; ibgp
+bgp connection "to22000"; template "M7"; remote AS 22000; remote address 100.1.2.2; ebgp
+firewall address list "M8" 200.1.2.0/24; 0.0.0.0/0; 200.1.33.0/24

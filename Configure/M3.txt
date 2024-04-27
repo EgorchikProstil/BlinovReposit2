@@ -1,0 +1,13 @@
+system identity set name=M3
+Loop0 3.3.3.3
+ether1 40.1.2.1/30
+ether2 100.1.2.2/30
+Router-id by Loop
+ospf instance "ospf-instance-1"
+ospf area with instance "ospf-instance-1"
+ospf interfaces ether1, Loop0
+dns static dns by 40.1.2.2
+bgp template "M3"; AS 22000; Router-id 3.3.3.3; default originate; next-hop-self; output network "M7"
+bgp connection "M1"; template "M3"; remote AS 22000; remote address 1.1.1.1; ibgp rr client
+bgp connection "to55000"; template "M3"; remote AS 55000; remote address 100.1.2.1; ebgp
+firewall address list "M7" 200.1.3.0/24; 0.0.0.0/0

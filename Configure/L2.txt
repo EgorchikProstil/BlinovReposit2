@@ -1,0 +1,31 @@
+conf t
+vlan 100 
+na VlanPC
+exit
+vlan 1000 
+na AdminVlan
+exit
+int range e0/0-1 
+sw tr enc dot1q
+sw mo tr
+exit
+int range e0/3, e1/0-1
+sw mo ac
+sw ac vl 100
+exit
+int e0/2
+sw mo ac
+sw ac vl 1000
+exit
+int vlan 100
+ip add 10.1.1.4 255.255.255.128
+exit
+int vlan 1000
+ip add 10.1.1.132 255.255.255.128
+exit
+line vty 0 4
+password cisco
+login
+transport input telnet
+exit
+enable password cisco

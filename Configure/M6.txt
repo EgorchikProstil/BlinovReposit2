@@ -1,0 +1,23 @@
+system identity set name=M6
+Loop0 6.6.6.6
+ether1 20.1.1.2/30
+ether2 200.1.1.1/24
+ether3 200.1.22.1/24
+dns static dns by 20.1.1.1
+ip route 0.0.0.0/0 20.1.1.1
+Router-id by loop
+default instance "ospf-instance-1"
+area with instance "ospf-instance-1"
+ospf interfaces ether1, Loop0
+dhcp server "server1" on ether2 (to Felial1) with adress pool "pool1"
+dhcp network 200.1.1.0/24 with gateway 200.1.1.1
+dhcp pool "pool1" 200.1.1.2-200.1.1.254
+dhcp static dhcp address for felial1 (200.1.1.254)
+dhcp server "server2" on ether3 (to Felial2-2) with adress pool "pool2"
+dhcp network 200.1.22.0/24 with gateway 200.1.22.1
+dhcp pool "pool2" 200.1.22.2-200.1.22.254
+dhcp static dhcp address for felial2-2 (200.1.22.254)
+dns static dns by 20.1.1.1
+bgp template "M6"; AS 33000; Router-id 6.6.6.6; next-hop-self; default originate; output netw "F1"
+bgp connection "M5"; template "M6"; remote AS 33000; remote address 5.5.5.5; ibgp
+firewall address list "F1" 200.1.1.0/24; 0.0.0.0/0; 200.1.22.0/24

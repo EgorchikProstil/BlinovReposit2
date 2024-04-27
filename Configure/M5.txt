@@ -1,0 +1,15 @@
+system identity set name=M5
+ether1 20.1.1.1/30
+ether2 100.1.1.1/30
+Loop0 5.5.5.5
+dns static dns by 100.1.1.2
+ip route 0.0.0.0/0 100.1.1.2
+Router-id by loop
+default instance "ospf-instance-1"
+area with instance "ospf-instance-1"
+ospf interfaces ether1, Loop0
+dns static dns by 100.1.1.2
+bgp template "M5"; AS 33000; Router-id 5.5.5.5; next-hop-self; default originate; output netw "M6"
+bgp connection "M6"; template "M5"; remote AS 33000; remote address 6.6.6.6; ibgp
+bgp connection "to22000"; template "M5"; remote AS 22000; remote address 100.1.1.2; ebgp
+firewall address list "M6" 200.1.1.0/24; 0.0.0.0/0; 200.1.22.0/24

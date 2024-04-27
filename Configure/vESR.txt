@@ -1,0 +1,145 @@
+login: admin
+password: 123
+object-group service dhcp_server
+  port-range 67
+exit
+object-group service telnet
+  port-range 23
+exit
+object-group network LAN
+  ip prefix 192.168.4.0/24
+exit
+domain lookup enable
+domain ip host felial3 43.1.43.1
+domain name-server 43.1.43.1
+domain name-server 8.8.8.8
+security zone trust
+exit
+security zone untrust
+exit
+router ospf 1
+  router-id 4.4.4.4
+  area 0.0.0.0
+    network 192.168.4.0/24
+    network 43.1.43.0/30
+    enable
+  exit
+  enable
+exit
+interface gigabitethernet 1/0/4
+  security-zone trust
+  ip address 192.168.4.1/24
+  ip ospf instance 1
+  ip ospf
+exit
+interface gigabitethernet 1/0/8
+  security-zone untrust
+  ip address 200.1.4.254/24
+exit
+tunnel gre 3
+  ttl 250
+  mtu 1476
+  security-zone untrust
+  local address 200.1.4.254
+  remote address 200.1.3.254
+  ip address 43.1.43.2/30
+  ip ospf instance 1
+  ip ospf priority 100
+  ip ospf
+  enable
+exit
+
+security zone-pair trust self
+  rule 1
+    action permit
+    match protocol icmp
+    match icmp echo
+    enable
+  exit
+  rule 2
+    action permit
+    match protocol udp
+    match destination-port dhcp_server
+    enable
+  exit
+  rule 3
+    action permit
+    match protocol tcp
+    match destination-port telnet
+    enable
+  exit
+  rule 6
+    action permit
+    match source-address LAN
+    enable
+  exit
+exit
+security zone-pair untrust self
+  rule 1
+    action permit
+    match protocol icmp
+    enable
+  exit
+  rule 2
+    action permit
+    match protocol tcp
+    match destination-port telnet
+    enable
+  exit
+  rule 5
+    action permit
+    match protocol ospf
+    enable
+  exit
+exit
+security zone-pair trust untrust
+  rule 1
+    action permit
+    match protocol icmp
+    enable
+  exit
+  rule 2
+    action permit
+    match protocol ospf
+    enable
+  exit
+exit
+security zone-pair untrust trust
+  rule 1
+    action permit
+    match protocol icmp
+    enable
+  exit
+exit
+security passwords default-expired
+nat source
+  ruleset NAT
+    to interface gigabitethernet 1/0/4
+    rule 10
+      match source-address LAN
+      action source-nat interface
+      enable
+    exit
+  exit
+exit
+ip dhcp-server
+ip dhcp-server pool pool1
+  network 192.168.4.0/24
+  domain-name Blinov1.up
+  default-lease-time 000:00:30
+  address-range 192.168.4.2-192.168.4.128
+  address 192.168.4.129 mac-address c4:ad:34:7d:67:40 (Wireless)
+  default-router 192.168.4.1
+  dns-server 192.168.4.1
+exit
+ip route 0.0.0.0/0 43.1.43.1
+ip route 200.1.3.0/24 200.1.4.1
+ip route 200.1.33.0/24 200.1.4.1
+exit
+ip telnet server
+ip ssh server
+ntp enable
+ntp logging
+ntp broadcast-client enable
+ntp server 200.1.4.1
+exit

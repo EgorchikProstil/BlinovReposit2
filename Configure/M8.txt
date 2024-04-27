@@ -1,0 +1,21 @@
+system identity set name=M2
+Loop0 8.8.8.8
+ether1 30.1.1.1/30
+ether2 200.1.2.1/24
+ether3 200.1.33.1/24
+Router-id by Loop
+ospf instance "ospf-instance-1"
+ospf area with instance "ospf-instance-1"
+ospf interfaces ether1, Loop0
+dhcp server "server1" on ether2 (to Felial2) with adress pool "pool1"
+dhcp network 200.1.2.0/24 with gateway 200.1.2.1
+dhcp pool "pool1" 200.1.2.2-200.1.2.254
+dhcp static dhcp address for Felial2 (200.1.2.254)
+dhcp server "server2" on ether3 (to Felial3-2) with adress pool "pool2"
+dhcp network 200.1.33.0/24 with gateway 200.1.33.1
+dhcp pool "pool2" 200.1.33.2-200.1.33.254
+dhcp static dhcp address for Felial3-2 (200.1.33.254)
+dns static dns by 30.1.1.2
+bgp template "M8"; AS 55000; Router-id 6.6.6.6; next-hop-self; output netw "F2"
+bgp connection "M7"; template "M8"; remote AS 55000; remote address 7.7.7.7; ibgp
+firewall address list "F2" 200.1.2.0/24; 200.1.33.0/24

@@ -1,0 +1,14 @@
+sytem identity set name=M14-2
+lo 142.142.142.142
+ether1 4.1.4.2/29
+ether2 2.1.2.2/30
+dhcp server "server1" on ether1 with adress pool "pool1"
+dhcp network 4.1.4.0/29 with gateway 4.1.4.2
+dhcp pool "pool1" 4.1.4.4-4.1.4.6
+dns static dns by 2.1.2.1
+bgp template "M14-2"; AS 48000; Router-id 142.142.142.142; output netw "PCISIS"
+bgp connection "M14-1"; template "M14-2"; remote AS 48000; remote address 141.141.141.141; ibgp
+bgp connection "M14-3"; template "M14-2"; remote AS 48000; remote address 143.143.143.143; ibgp
+isis instance isis; area 00.0000; system-id 4242.4242.4242
+isis interface template instances isis; intefaces ether1,ether2,lo levels l1
+firewall address list "PCISIS" 200.1.4.0/24

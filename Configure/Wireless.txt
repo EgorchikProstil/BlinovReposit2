@@ -1,0 +1,9 @@
+system identity set name=Wireless
+bridge1 is ip dhcp client (192.168.4.129)
+bridge1 on ether2 and wlan1
+wlan1 mode=ap bridge; BAND=2GHz-B/G/N; channel width 20/40MHz XX; SSID Mikrotik; wireless protocol 802.11; country Russia
+security profile "default" dynamic keys WPA2 PSK; aes ccm; password EgorchikPro
+dhcp server "server1" on bridge1 (to client) with adress pool "pool1"
+dhcp network 192.168.4.128/25 with gateway 192.168.4.129
+dhcp pool "pool1" 192.168.4.130-192.168.4.254
+dns dinamyc dns on brige1

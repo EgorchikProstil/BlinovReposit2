@@ -1,0 +1,27 @@
+system idnetity set name=Felial1-2
+ether1 192.168.1.3/24
+ether2 is dhcp client
+vrrp1 192.168.1.1/24
+gre-tunnellF3 123.1.123.2/30; via 200.1.3.254
+gre-tunnellF3-2 125.1.125.2/30; via 200.1.2.254
+ip route 0.0.0.0/0 via 123.1.123.1 || F3
+ip route 0.0.0.0/0 via 125.1.125.1 || F3-2
+ip route 200.1.3.0/24 via 200.1.11.1
+ip route 200.1.33.0/24 via 200.1.11.1
+Router-id 1.2.2.1
+ospf instances "ospf-instance-1"
+ospf area with instance "ospf-instance-1"
+ospf interfaces ether1, gre-tunnellF3, gre-tunnellF3-2
+vrrp ether1; no preemption; priority 50; version 2; au ah passwrd "1234"
+dhcp server "server1" on vrrp1 with address pool "pool1"; dns 192.168.1.1; domain Blinov1.up
+dhcp network 192.168.1.0/24 gateway 192.168.1.1
+dhcp pool "pool1" 192.168.1.4-192.168.1.254
+dns static dns by 123.1.123.1 and 125.1.125.1
+NAT add srcnat with out ether2 in action masquerad
+NAT add srcnat with out gre-tunnellF3 in action masquerad
+NAT add srcnat with out gre-tunnellF3-2 in action masquerad
+netwatch {
+"F3" 200.1.3.254 simple
+if up (/ip/route enable [find comment="F3"]  /ip/route disable [find comment="F3-2"])
+if down (/ip/route enable [find comment="F3-2"]  /ip/route disable [find comment="F3"])
+}

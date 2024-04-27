@@ -1,0 +1,33 @@
+system identity set name=Felial3-2
+ether1 is 192.168.3.3/24
+ether2 is dhcp client
+vrrp1 is 192.168.3.1/24
+gre-tunnellF1 132.1.132.2/30; via 200.1.1.254
+gre-tunnellF2 110.1.110.2/30; via 200.1.2.254
+gre-tunnellF1-2 125.1.125.1/30; via 200.1.11.254
+gre-tunnellF2-2 115.1.115.1/30; via 200.1.22.254
+vrrp on ether1; no preemption; 50 priority; version 2; au ah passwrd "3232"
+Router-id 3.2.3.2
+ospf instances "ospf-instance-1"
+ospf area with instance "ospf-instance-1"
+ospf interfaces gre-tunnellF1, gre-tunnellF1-2, gre-tunnellF2, gre-tunnellF2-2
+dhcp server "server1" on vrrp1 with address pool "pool1"; dns 192.168.3.1
+dhcp network 192.168.3.0/24 gateway 192.168.3.1
+dhcp pool "pool1" 192.168.3.4-192.168.3.254
+dhcp static address for ApacheServer (192.168.3.254)
+dns dynamic dns by ether2
+firewall output on ether1; tcp; action drop
+firewall output on gre-tunnellF1; tcp; action accept
+firewall output on gre-tunnellF1-2; tcp; action accept
+firewall output on gre-tunnellF2; tcp; action accept
+firewall output on gre-tunnellF2-2; tcp; action accept
+firewall input on gre-tunnellF1; tcp; action drop
+firewall input on gre-tunnellF1-2; tcp; action drop
+firewall input on gre-tunnellF2; tcp; action drop
+firewall input on gre-tunnellF2-2; tcp; action drop
+NAT add srcnat with out ether2 in action masquerad
+NAT add srcnat with out gre-tunnellF1 in action masquerad
+NAT add srcnat with out gre-tunnellF1-2 in action masquerad
+NAT add srcnat with out gre-tunnellF2 in action masquerad
+NAT add srcnat with out gre-tunnelF2-2 in action masquerad
+NAT dstnat port 80 to 192.168.3.254; protocol tcp; action dstnat
