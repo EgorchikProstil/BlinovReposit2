@@ -31,5 +31,5 @@ NAT add srcnat with out gre-tunnellF1 in action masquerad
 NAT add srcnat with out gre-tunnellF1-2 in action masquerad
 NAT add srcnat with out gre-tunnellF2 in action masquerad
 NAT add srcnat with out gre-tunnellF2-2 in action masquerad
-NAT dstnat port 80 to 192.168.3.254; protocol tcp; action dstnat
+NAT dstnat port 5000 to 192.168.3.249; protocol tcp; action dstnat
 
